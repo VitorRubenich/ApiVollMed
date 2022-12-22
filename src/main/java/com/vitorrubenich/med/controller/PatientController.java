@@ -26,7 +26,7 @@ public class PatientController {
 
 	@PostMapping
 	@Transactional
-	public ResponseEntity cadastrar(@RequestBody @Valid DtoPatient dadosPaciente, UriComponentsBuilder uriBuilder) {
+	public ResponseEntity postPatients(@RequestBody @Valid DtoPatient dadosPaciente, UriComponentsBuilder uriBuilder) {
 		var patient = new Patient(dadosPaciente);
 		patientRepository.save(patient);
 		var uri = uriBuilder.path("/patients/{id}").buildAndExpand(patient.getId()).toUri();
@@ -37,14 +37,14 @@ public class PatientController {
 
 
 	@GetMapping
-	public ResponseEntity<Page<DtoPatientList>> listar(@PageableDefault(sort = {"name"}, size = 10) Pageable pagination){
+	public ResponseEntity<Page<DtoPatientList>> getPatients(@PageableDefault(sort = {"name"}, size = 10) Pageable pagination){
 		var page =  patientRepository.findAll(pagination).map(DtoPatientList::new);
 		return ResponseEntity.ok(page);
 	}
 
 	@PutMapping
 	@Transactional
-	public ResponseEntity updatePatient(@RequestBody @Valid DtoUpdatePatient dtoUpdatePatient){
+	public ResponseEntity putPatient(@RequestBody @Valid DtoUpdatePatient dtoUpdatePatient){
 		var patient = patientRepository.getReferenceById(dtoUpdatePatient.id());
 		patient.updatePatient(dtoUpdatePatient);
 		return ResponseEntity.ok(new DtoPatientDet(patient));
