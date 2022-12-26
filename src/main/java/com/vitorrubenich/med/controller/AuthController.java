@@ -1,6 +1,9 @@
 package com.vitorrubenich.med.controller;
 
 import com.vitorrubenich.med.dto.DtoAuthLogin;
+import com.vitorrubenich.med.dto.DtoToken;
+import com.vitorrubenich.med.model.User;
+import com.vitorrubenich.med.service.TokenService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -18,10 +21,14 @@ public class AuthController {
     @Autowired
     private AuthenticationManager authManager;
 
+    @Autowired
+    private TokenService tokenService;
+
     @PostMapping
     public ResponseEntity doLogin(@RequestBody @Valid DtoAuthLogin dtoAuthLogin){
-        var token = new UsernamePasswordAuthenticationToken(dtoAuthLogin.login(), dtoAuthLogin.senha());
-        var authentication = authManager.authenticate(token);
-        return ResponseEntity.ok().build();
+        var authenticationToken = new UsernamePasswordAuthenticationToken(dtoAuthLogin.login(), dtoAuthLogin.senha());
+        var authentication = authManager.authenticate(authenticationToken);
+        var tokenJWT = tokenService.createToken((User) authentication.getPrincipal());
+        return ResponseEntity.ok(new DtoToken(tokenJWT));
     }
 }

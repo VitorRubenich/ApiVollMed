@@ -1,5 +1,6 @@
 package com.vitorrubenich.med.model;
 
+import com.vitorrubenich.med.dto.DtoRegisterUser;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
@@ -26,6 +27,15 @@ public class User implements UserDetails {
     private String senha;
 
 
+    public User(DtoRegisterUser dtoRegisterUser){
+        this.login = dtoRegisterUser.login();
+        this.senha = dtoRegisterUser.senha();
+    }
+
+    private void setSenhaEncriptada(String senhaEncriptada){
+        this.senha = senhaEncriptada;
+    }
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority("ROLE_USER"));
@@ -33,12 +43,12 @@ public class User implements UserDetails {
 
     @Override
     public String getPassword() {
-        return senha;
+        return this.senha;
     }
 
     @Override
     public String getUsername() {
-        return login;
+        return this.login;
     }
 
     @Override
